@@ -13,8 +13,8 @@ driver = webdriver.Chrome()  # You'll need to provide the path to your Chrome We
 wait = WebDriverWait(driver, 10)  # Set a WebDriverWait with a timeout of 10 seconds
 
 # Open the website
-driver.get("https://zho.gov.ae/ar-AE/Sign-Language-Dictionary/UAE-Sign-Language-Categories/Arabic-Sign-Languages#mastercard_categoryname=%D8%A7%D9%84%D8%B3%D9%85%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D9%85%D9%88%D8%A7%D9%82%D9%81")  # Replace with the URL of the website you want to interact with
-fn = 'vid data-c3.pickle'
+driver.get("https://zho.gov.ae/ar-AE/Sign-Language-Dictionary/UAE-Sign-Language-Categories/Arabic-Sign-Languages")  # Replace with the URL of the website you want to interact with
+fn = 'vid data.pickle'
 time.sleep(6)
 driver.execute_script("window.scrollTo(0, document.body.scrollHeight-3500);")
 
@@ -88,6 +88,11 @@ while True:
         time.sleep(1.5)
     except Exception as e:
         print(e)
+
+        action = ActionChains(driver)
+        action.send_keys(keys.Keys.ARROW_RIGHT).perform()
+
+        continue
 
     
     
