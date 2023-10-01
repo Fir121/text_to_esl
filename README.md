@@ -12,6 +12,5 @@
 |_ Base Files
     `search.py` - Loads words stored in csv, uses Arabycia to search for words (not very effective)
 
-Arabycia repo is contained within this repo!
-
+Download Arabycia, and dependencies and remove extra code separately
 Requirements.txt has a lot of libraries, might prefer to install as you use. Gitignore contains videos folder.

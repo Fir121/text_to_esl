@@ -2,3 +2,5 @@ venv
 videos
 models
 .env
+*.zip
+Arabycia
