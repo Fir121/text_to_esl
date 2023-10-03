@@ -17,12 +17,13 @@ for index, row in df.iterrows():
     else:
         solo_words.append(word)
 
-word = "يكتب"
+word = "مقعد"
 text = " ".join(solo_words)
 arabycia = Arabycia.Arabycia()
 arabycia.set_raw_text(text)
 search_result = arabycia.text_search(arabycia.stem(word))
 print(search_result)
+print(arabycia.lemmatization(word))
 
 if word in solo_words:
     print(True)

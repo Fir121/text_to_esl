@@ -32,4 +32,4 @@ df = pd.read_csv(excel_file)
 
 df["embedding"] = df.embedding.apply(literal_eval).apply(np.array)
 
-res = search_reviews(df, 'ممتاز', n=3)
+res = search_reviews(df, 'مركبة', n=3)
