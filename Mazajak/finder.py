@@ -21,7 +21,7 @@ for index, row in df.iterrows():
 embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/sg_250.bin',binary=True,unicode_errors='ignore')
 
 d_arr = {}
-inp = 'سيارات'
+inp = 'اسم'
 for word in solo_words:
     try:
         d_arr[word] = embeddings.similarity(inp, word)
