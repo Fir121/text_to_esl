@@ -11,6 +11,14 @@ files = [file for file in files_and_directories if os.path.isfile(os.path.join(d
 for file in files:
     fp = os.path.join(directory_path, file)
 
+    # Output video file path
+    output_file = os.path.join(save_path, file)
+
+    if os.path.exists(output_file):
+        continue
+
+    print(file)
+
     video_capture = cv2.VideoCapture(fp)
     fps = int(video_capture.get(cv2.CAP_PROP_FPS))
 
@@ -67,9 +75,6 @@ for file in files:
     # Start and end frame (in seconds)
     start_time = start_frame/fps
     end_time = end_frame/fps
-
-    # Output video file path
-    output_file = os.path.join(save_path, file)
 
     # Crop and save the video
     ffmpeg_extract_subclip(fp, start_time, end_time, targetname=output_file)

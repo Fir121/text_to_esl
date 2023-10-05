@@ -15,5 +15,11 @@
 
     `search.py` - Loads words stored in csv, uses Arabycia to search for words (not very effective)
 
+Video is base for Video Generation
+
+Mazajak is an alternate embeddings code using custom Arabic model
+
+---
+
 Download Arabycia, and dependencies and remove extra code separately
 Requirements.txt has a lot of libraries, might prefer to install as you use. Gitignore contains videos folder.
