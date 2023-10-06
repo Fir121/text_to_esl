@@ -5,3 +5,4 @@ models
 *.zip
 Arabycia
 Mazajak/data
+__pycache__
