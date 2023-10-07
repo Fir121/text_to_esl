@@ -1,5 +1,5 @@
 import pandas as pd
-from ArabcyiaUsage.search import check_for_stem
+# from ArabcyiaUsage.search import check_for_stem
 from  Mazajak.finder import get_match
 from Grammar.processor import fix_grammar
 
@@ -35,9 +35,6 @@ for index, row in ldf.iterrows():
 
 
 # Grammar fix pipleline
-"""
-INSERT LLM FN CALL HERE
-"""
 inp = fix_grammar(inp)
 print(inp)
 
@@ -54,7 +51,7 @@ print("Processing", inp)
 for i in range(len(multi_words)):
     if multi_words[i] in inp:
         inp.replace(multi_words[i], f"MREPL{i}")
-['أناني', 'أ', 'ق', 'و', 'د', 'سيارة', 'إ', 'ل', 'ى', 'كلية']
+# ['أناني', 'أ', 'ق', 'و', 'د', 'سيارة', 'إ', 'ل', 'ى', 'كلية']
 
 final_arr = inp.split(" ")
 for i in range(len(final_arr)):
