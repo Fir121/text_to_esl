@@ -2,6 +2,7 @@ import pandas as pd
 # from ArabcyiaUsage.search import check_for_stem
 from  Mazajak.finder import get_match
 from Grammar.processor import fix_grammar
+from contplayer.player import play_files, save_files, play_files_with_mediapipe
 
 # user input
 inp = input("Enter Sentence: ")
@@ -76,7 +77,13 @@ for x in final_arr:
         for y in x:
             ans.append(y)
 
+for i in range(len(ans)):
+    ans[i] += ".mp4"
+
 print(ans)
+play_files(ans)
+save_files(ans)
+play_files_with_mediapipe(ans)
 
 
 """
