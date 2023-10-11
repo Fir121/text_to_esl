@@ -8,7 +8,7 @@ from audiorecorder import audiorecorder
 import whisper
 import os
 
-openai.api_key = "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"
+openai.api_key = <ADD API KEY>
 
 st.set_page_config(layout="wide", 
                    page_title="ESL",
