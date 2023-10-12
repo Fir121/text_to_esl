@@ -1,14 +1,16 @@
 import openai
 import streamlit as st
+from AudioRecorder import audiorecorder
 import pandas as pd
 from  Mazajak.finder import get_match
 from Grammar.processor import fix_grammar
 from contplayer.player import play_files, save_files, play_files_with_mediapipe
-from audiorecorder import audiorecorder
-import whisper
 import os
 
-openai.api_key = <ADD API KEY>
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
+openai.api_key = os.getenv("OPENAI_KEY")
 
 st.set_page_config(layout="wide", 
                    page_title="ESL",
