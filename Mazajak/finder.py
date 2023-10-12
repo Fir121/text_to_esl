@@ -2,7 +2,7 @@ import gensim
 import pandas as pd
 from operator import itemgetter
 
-embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/sg_250.bin',binary=True,unicode_errors='ignore')
+embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/smaller_model.bin',binary=True,unicode_errors='ignore')
 
 def get_match(word, word_list, threshold=0.45):
     d_arr = {}

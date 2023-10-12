@@ -40,9 +40,9 @@ def play_files(video_files):
 
 def play_files_with_mediapipe(video_files):
     mp_drawing = mp.solutions.drawing_utils
-    mp_holistic = mp.solutions.holistic
+    mp_holistic = mp.solutions.hands
     frame_width = frame_height = size = result = None
-    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+    with mp_holistic.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         for video_file in video_files:
             video_path = os.path.join(video_dir, video_file)
 
@@ -86,22 +86,29 @@ def play_files_with_mediapipe(video_files):
                 #                         )
                 
                 # 2. Right hand
-                mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                                        mp_drawing.DrawingSpec(color=(80,22,10), thickness=1, circle_radius=3),
-                                        mp_drawing.DrawingSpec(color=(80,44,121), thickness=1, circle_radius=2)
-                                        )
+                # mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
+                #                         mp_drawing.DrawingSpec(color=(80,22,10), thickness=1, circle_radius=3),
+                #                         mp_drawing.DrawingSpec(color=(80,44,121), thickness=1, circle_radius=2)
+                #                         )
 
-                # 3. Left Hand
-                mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                                        mp_drawing.DrawingSpec(color=(121,22,76), thickness=1, circle_radius=3),
-                                        mp_drawing.DrawingSpec(color=(121,44,250), thickness=1, circle_radius=2)
-                                        )
+                # # 3. Left Hand
+                # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
+                #                         mp_drawing.DrawingSpec(color=(121,22,76), thickness=1, circle_radius=3),
+                #                         mp_drawing.DrawingSpec(color=(121,44,250), thickness=1, circle_radius=2)
+                #                         )
+            
+                if results.multi_hand_landmarks:
+                    for hand_landmarks in results.multi_hand_landmarks:
+                        mp_drawing.draw_landmarks(image, hand_landmarks , mp_holistic.HAND_CONNECTIONS, 
+                                            mp_drawing.DrawingSpec(color=(121,22,76), thickness=1, circle_radius=3),
+                                            mp_drawing.DrawingSpec(color=(121,44,250), thickness=1, circle_radius=2)
+                                            )
 
                 # 4. Pose Detections
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS, 
-                                        mp_drawing.DrawingSpec(color=(245,117,66), thickness=1, circle_radius=3),
-                                        mp_drawing.DrawingSpec(color=(245,66,230), thickness=1, circle_radius=2)
-                                        )
+                # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS, 
+                #                         mp_drawing.DrawingSpec(color=(245,117,66), thickness=1, circle_radius=3),
+                #                         mp_drawing.DrawingSpec(color=(245,66,230), thickness=1, circle_radius=2)
+                #                         )
                                 
                 cv2.imshow('Raw Webcam Feed', image)
                 result.write(image) 
