@@ -2,7 +2,7 @@ import gensim
 import pandas as pd
 from operator import itemgetter
 
-embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/smaller_model.bin',binary=True,unicode_errors='ignore')
+embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/sg_250.bin',binary=True,unicode_errors='ignore')
 
 def get_match(word, word_list, threshold=0.45):
     d_arr = {}
@@ -10,6 +10,7 @@ def get_match(word, word_list, threshold=0.45):
         try:
             d_arr[w] = embeddings.similarity(word, w) # can this be normalised, relative_cosine_similarity works but is very slow, need better solution for threshold
         except Exception as e:
+            print(e)
             pass
     val = sorted(d_arr.items(), key=itemgetter(1), reverse=True)[:5]
     if len(val) == 0:

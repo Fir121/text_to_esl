@@ -1,8 +1,4 @@
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-import openai, os
-
-openai.api_key = os.getenv("OPENAI_KEY")
+import openai
 
 prompt_rules = '''I am building an arabic text to arabic sign language generator. For that I have videos of sign language animation of certain arabic words. But my first step to to convert the input arabic text into sign language grammar before mapping it to videos. I have some set of rules to follow for that:
 
@@ -44,13 +40,14 @@ example: ھذان ولدان(there are two boys) is changed to ھذان ولد 2
 R11. If Number (wi) = plural THEN ti = root(wi) + “كثیر” (a lot)   i.e. If the word number is plural, we insert add the word “كثیر” (a lot) after the root of the word
 example:  أقلام(pens) is changed to قلم كثیر(pen a lot)'''
 
-def fix_grammar(arabic_input):
+def fix_grammar(arabic_input, key):
     prompt_input = f'''Now use these rule and convert the following input to the output arabic text with explanation:
     {arabic_input}. Only return the final arabic output. Only the final output. No explanation is needed.'''
 
     prompt = prompt_rules+prompt_input
 
     response = openai.ChatCompletion.create(
+        api_key=key,
         model="gpt-3.5-turbo",
         temperature=0.3,
         messages=[

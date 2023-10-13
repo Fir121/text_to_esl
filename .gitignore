@@ -8,3 +8,4 @@ Mazajak/data
 __pycache__
 *.mp4
 *.avi
+.streamlit

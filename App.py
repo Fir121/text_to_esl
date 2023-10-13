@@ -1,16 +1,15 @@
 import openai
 import streamlit as st
+import openai
+openai.api_key = st.secrets['OPENAI_KEY']
 from AudioRecorder import audiorecorder
 import pandas as pd
-from  Mazajak.finder import get_match
 from Grammar.processor import fix_grammar
-from contplayer.player import play_files, save_files, play_files_with_mediapipe
-import os
+from contplayer.player import save_files
+import requests
 
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-
-openai.api_key = os.getenv("OPENAI_KEY")
+def req_get_match(word):
+    return requests.post("http://127.0.0.1:5000/get-match", data={"word":word}).json()["data"]
 
 st.set_page_config(layout="wide", 
                    page_title="ESL",
@@ -22,6 +21,20 @@ excel_file = "data/output-excel.csv"
 df = pd.read_csv(excel_file)
 letters_excel_file = "data/output-letters.csv"
 ldf = pd.read_csv(letters_excel_file)
+multi_words = []
+solo_words = []
+letters = []
+
+for index, row in df.iterrows():
+    word = str(row[0])
+    if len(word.split(" ")) > 1:
+        multi_words.append(word)
+    else:
+        solo_words.append(word)
+
+for index, row in ldf.iterrows():
+    word = str(row[0])
+    letters.append(word)
 
 def get_link_from_key(key, df):
     return key
@@ -35,27 +48,12 @@ def get_fingerspell_links(word):
 def processing(inp):
     inp = inp.strip()
     inp = inp.lower()
-    multi_words = []
-    solo_words = []
-    letters = []
 
-    for index, row in df.iterrows():
-        word = str(row[0])
-        if len(word.split(" ")) > 1:
-            multi_words.append(word)
-        else:
-            solo_words.append(word)
-
-    for index, row in ldf.iterrows():
-        word = str(row[0])
-        letters.append(word)
-
-    inp = fix_grammar(inp)
+    inp = fix_grammar(inp, st.secrets['OPENAI_KEY'])
 
     for i in range(len(multi_words)):
         if multi_words[i] in inp:
             inp.replace(multi_words[i], f"MREPL{i}")
-    # ['أناني', 'أ', 'ق', 'و', 'د', 'سيارة', 'إ', 'ل', 'ى', 'كلية']
 
     final_arr = inp.split(" ")
     for i in range(len(final_arr)):
@@ -63,8 +61,8 @@ def processing(inp):
         if word.startswith("MREPL"):
             key = multi_words[int(word.lstrip("MREPL"))]
             final_arr[i] = get_link_from_key(key, df)
-        elif get_match(word, solo_words) is not None:
-            key = get_match(word, solo_words)
+        elif req_get_match(word) is not None:
+            key = req_get_match(word)
             final_arr[i] = get_link_from_key(key, df)
         else:
             final_arr[i] = get_fingerspell_links(word)

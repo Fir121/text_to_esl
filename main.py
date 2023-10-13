@@ -3,7 +3,11 @@ import pandas as pd
 from  Mazajak.finder import get_match
 from Grammar.processor import fix_grammar
 from contplayer.player import play_files, save_files, play_files_with_mediapipe
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+import openai, os
 
+openai.api_key = os.getenv("OPENAI_KEY")
 # user input
 inp = input("Enter Sentence: ")
 inp = inp.strip()
