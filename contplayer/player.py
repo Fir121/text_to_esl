@@ -3,40 +3,9 @@ import os
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 import mediapipe as mp
 import numpy as np
+import uuid
 
 video_dir = 'videos/processed/'
-
-def play_files(video_files):
-    for video_file in video_files:
-        video_path = os.path.join(video_dir, video_file)
-
-        # Create a VideoCapture object
-        cap = cv2.VideoCapture(video_path)
-
-        if not cap.isOpened():
-            print(f"Could not open video file: {video_path}")
-            continue
-
-        # Play the video
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            # Display the frame (you can also process it if needed)
-            cv2.imshow('Video Player', frame)
-
-            # Break the loop if 'q' is pressed
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
-
-        # Release the VideoCapture and close the display window
-        cap.release()
-        cv2.destroyAllWindows()
-
-    # Exit the program
-    cv2.destroyAllWindows()
-
 
 def play_files_with_mediapipe(video_files):
     mp_drawing = mp.solutions.drawing_utils
@@ -126,15 +95,18 @@ def play_files_with_mediapipe(video_files):
 
 
 def save_files(video_files):
-    # Get a list of video files in the directory
     farr = []
 
     for file in video_files:
         try:
-            farr.append(VideoFileClip(os.path.join(video_dir, file)))
+            fc = VideoFileClip(os.path.join(video_dir, file))
+            fc = fc.resize((1280,720))
+            farr.append(fc)
         except Exception as e:
             print(file, e)
             continue
     
-    concatenate_videoclips(farr, method='compose').write_videofile("final.mp4")
+    fname = f"outputs/{uuid.uuid4()}.mp4"
+    concatenate_videoclips(farr, method='compose').write_videofile(fname)
+    return fname
 
