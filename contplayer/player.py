@@ -1,34 +1,29 @@
 import cv2
 import os
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, concatenate_videoclips, CompositeVideoClip
 import mediapipe as mp
 import numpy as np
 import uuid
 
 video_dir = 'videos/processed/'
 
-def play_files_with_mediapipe(video_files):
+def save_file_with_mediapipe(video_file):
     mp_drawing = mp.solutions.drawing_utils
-    mp_holistic = mp.solutions.hands
+    mp_hands = mp.solutions.hands
+    mp_pose = mp.solutions.pose
     frame_width = frame_height = size = result = None
-    with mp_holistic.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        for video_file in video_files:
-            video_path = os.path.join(video_dir, video_file)
-
-            # Create a VideoCapture object
-            cap = cv2.VideoCapture(video_path)
+    with mp_hands.Hands(min_detection_confidence=0.4, min_tracking_confidence=0.4, model_complexity=0) as hands:
+        with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4, model_complexity=0) as pose:
+            cap = cv2.VideoCapture(video_file)
             
-            if not cap.isOpened():
-                print(f"Could not open video file: {video_path}")
-                continue
             if size is None:
                 frame_width = int(cap.get(3)) 
                 frame_height = int(cap.get(4)) 
                 
                 size = (frame_width, frame_height) 
-                result = cv2.VideoWriter('output.avi',  
-                         cv2.VideoWriter_fourcc(*'MJPG'), 
-                         10, size) 
+                result = cv2.VideoWriter(f'{video_file.split(".")[0]}-1.mp4',  
+                            cv2.VideoWriter_fourcc(*'MP4V'), 
+                            cap.get(cv2.CAP_PROP_FPS), size) 
 
             # Play the video
             while True:
@@ -38,55 +33,40 @@ def play_files_with_mediapipe(video_files):
 
                 # Recolor Feed
                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                imagebg = np.zeros((image.shape[0], image.shape[1], 3), dtype = "uint8")
                 # Make Detections
-                results = holistic.process(image)
-                # print(results.face_landmarks)
-                
-                # face_landmarks, pose_landmarks, left_hand_landmarks, right_hand_landmarks
-                
-                # Recolor image back to BGR for rendering
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                image = np.zeros((image.shape[0], image.shape[1], 3), dtype = "uint8")
-                
-                # 1. Draw face landmarks
-                # mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACEMESH_CONTOURS, 
-                #                         mp_drawing.DrawingSpec(color=(80,110,10), thickness=1, circle_radius=1),
-                #                         mp_drawing.DrawingSpec(color=(80,256,121), thickness=1, circle_radius=1)
-                #                         )
-                
-                # 2. Right hand
-                # mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                #                         mp_drawing.DrawingSpec(color=(80,22,10), thickness=1, circle_radius=3),
-                #                         mp_drawing.DrawingSpec(color=(80,44,121), thickness=1, circle_radius=2)
-                #                         )
+                results = hands.process(image)
+                results2 = pose.process(image)
 
-                # # 3. Left Hand
-                # mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                #                         mp_drawing.DrawingSpec(color=(121,22,76), thickness=1, circle_radius=3),
-                #                         mp_drawing.DrawingSpec(color=(121,44,250), thickness=1, circle_radius=2)
-                #                         )
+                # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
                 if results.multi_hand_landmarks:
                     for hand_landmarks in results.multi_hand_landmarks:
-                        mp_drawing.draw_landmarks(image, hand_landmarks , mp_holistic.HAND_CONNECTIONS, 
-                                            mp_drawing.DrawingSpec(color=(121,22,76), thickness=1, circle_radius=3),
-                                            mp_drawing.DrawingSpec(color=(121,44,250), thickness=1, circle_radius=2)
+                        mp_drawing.draw_landmarks(imagebg, hand_landmarks , mp_hands.HAND_CONNECTIONS, 
+                                            mp_drawing.DrawingSpec(color=(121,22,76), thickness=2, circle_radius=3),
+                                            mp_drawing.DrawingSpec(color=(121,44,250), thickness=2, circle_radius=3)
                                             )
-
-                # 4. Pose Detections
-                # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS, 
-                #                         mp_drawing.DrawingSpec(color=(245,117,66), thickness=1, circle_radius=3),
-                #                         mp_drawing.DrawingSpec(color=(245,66,230), thickness=1, circle_radius=2)
-                #                         )
+                if results2.pose_landmarks:
+                    # 17 - 22 set to null, to remove hand pose (overlaps with above)
+                    for i in range(17,23):
+                        del results2.pose_landmarks.landmark[i]
+                        results2.pose_landmarks.landmark.insert(i,results2.pose_landmarks.landmark[30]) # hackiest hack of a solution to exist. Contact Firas to hear ;)
+                    e_conn = set()
+                    for conn in mp_pose.POSE_CONNECTIONS:
+                        for j in range(17,23):
+                            if j in conn:
+                                break
+                        else:
+                            e_conn.add(conn)
+                    mp_drawing.draw_landmarks(imagebg, results2.pose_landmarks , e_conn, 
+                                    mp_drawing.DrawingSpec(color=(121,22,76), thickness=2, circle_radius=3),
+                                    mp_drawing.DrawingSpec(color=(121,44,250), thickness=2, circle_radius=3)
+                                    )
                                 
-                cv2.imshow('Raw Webcam Feed', image)
-                result.write(image) 
-                # Break the loop if 'q' is pressed
-                if cv2.waitKey(25) & 0xFF == ord('q'):
-                    break
+                result.write(imagebg) 
 
-            # Release the VideoCapture and close the display window
-            cap.release()
+        # Release the VideoCapture and close the display window
+        cap.release()
 
     # Exit the program
     result.release() 
@@ -108,5 +88,22 @@ def save_files(video_files):
     
     fname = f"outputs/{uuid.uuid4()}.mp4"
     concatenate_videoclips(farr, method='compose').write_videofile(fname)
-    return fname
+    save_file_with_mediapipe(fname)
+
+    mpipe = f'{fname.split(".")[0]}-1.mp4'
+
+    vc1 = VideoFileClip(fname)
+    vc2 = VideoFileClip(mpipe)
+
+    # Crop the middle halves of the videos
+    video1_cropped = vc1.crop(x1=320, x2=960)
+    video2_cropped = vc2.crop(x1=320, x2=960)
+
+    # Combine the videos side by side
+    final_video = CompositeVideoClip([video1_cropped.set_position((0,0)), video2_cropped.set_position((640,0))], size=(1280,720))
+
+    # Write the final video to a file
+    final_video.write_videofile(f'{fname.split(".")[0]}-2.mp4')
+
+    return f'{fname.split(".")[0]}-2.mp4'
 

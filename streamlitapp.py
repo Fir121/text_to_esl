@@ -89,7 +89,7 @@ def app():
     st.markdown("#")
     col1, col2 = st.columns([2, 1])
     with col1:
-        tab1, tab2, tab3 = st.tabs(["Text", "Audio", "Video"])
+        tab1, tab2 = st.tabs(["Text", "Audio"])
         with tab1:
             st.session_state['input_text'] = st.text_area('Input text in arabic')
 
@@ -123,10 +123,7 @@ def app():
             if len(st.session_state['final_array']) > 0:
                 st.divider()
                 st.text("Processed Text:")
-                st.caption('   '.join(st.session_state['final_array']).replace(".mp4",""))      
-
-        with tab3:
-            st.text("Add video part here")          
+                st.caption('   '.join(st.session_state['final_array']).replace(".mp4",""))
     
     with col2:
         st.markdown("#")
