@@ -7,6 +7,7 @@ from audiorecorder import audiorecorder
 from Grammar.processor import fix_grammar
 from contplayer.player import save_files
 import requests
+from PIL import Image
 
 
 ### GENERAL SETUP
@@ -94,8 +95,9 @@ def app():
             st.session_state['input_text'] = st.text_area('Input text in arabic')
 
             if st.button("Submit Text"):
-                ans = processing(st.session_state['input_text'])
-                save_video(ans)     
+                with st.spinner('Processing Text...'):
+                    ans = processing(st.session_state['input_text'])
+                    save_video(ans)   
                 st.experimental_rerun()
 
             if len(st.session_state['final_array']) > 0:
@@ -115,9 +117,10 @@ def app():
                 audio.export("audio.wav", format="wav")
 
             if st.button("Submit Audio"):
-                audio_to_text()
-                ans = processing(st.session_state['input_text'])
-                save_video(ans)     
+                with st.spinner('Processing Text...'):
+                    audio_to_text()
+                    ans = processing(st.session_state['input_text'])
+                    save_video(ans)
                 st.experimental_rerun()
 
             if len(st.session_state['final_array']) > 0:
@@ -133,7 +136,9 @@ def app():
             video_bytes = video_file.read()
             st.video(video_bytes)
         else:
-            st.caption("We can add an image here")
+            image = Image.open('./assets/logo.png')
+
+            st.image(image, width = 400)
 
 
 # Run the Streamlit app
