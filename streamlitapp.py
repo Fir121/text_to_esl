@@ -34,7 +34,7 @@ def processing(inp):
     # Step 2: a: Set signs for the sign video entries consisting of multiple words
     for i in range(len(multi_words)):
         if multi_words[i] in inp:
-            inp.replace(multi_words[i], f"MREPL{i}")
+            inp = inp.replace(multi_words[i], f"MREPL{i}")
 
     # Step 2: b: Set sign video for each word, fingerspell as backup
     final_arr = inp.split(" ")
@@ -43,6 +43,8 @@ def processing(inp):
         if word.startswith("MREPL"):
             key = multi_words[int(word.lstrip("MREPL"))]
             final_arr[i] = key
+        elif word in solo_words:
+            final_arr[i] = word
         elif req_get_match(word) is not None:
             key = req_get_match(word)
             final_arr[i] = key
