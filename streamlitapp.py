@@ -30,6 +30,7 @@ def processing(inp):
 
     # Step 1: Adjust grammar to ESL style
     inp = fix_grammar(inp, st.secrets['OPENAI_KEY'])
+    print(inp)
 
     # Step 2: a: Set signs for the sign video entries consisting of multiple words
     for i in range(len(multi_words)):
@@ -47,6 +48,7 @@ def processing(inp):
             final_arr[i] = word
         elif req_get_match(word) is not None:
             key = req_get_match(word)
+            print(word, "matches", key)
             final_arr[i] = key
         else:
             final_arr[i] = get_fingerspell_links(word)

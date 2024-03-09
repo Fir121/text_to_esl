@@ -3,7 +3,7 @@ from operator import itemgetter
 
 embeddings = gensim.models.KeyedVectors.load_word2vec_format('Mazajak/data/sg_250.bin',binary=True,unicode_errors='ignore')
 
-def get_match(word, word_list, threshold=0.45):
+def get_match(word, word_list, threshold=0.6):
     d_arr = {}
     for w in word_list:
         try:
@@ -15,6 +15,7 @@ def get_match(word, word_list, threshold=0.45):
         return None
     val = val[0]
     if val[1] >= threshold:
+        print(word, val)
         return val[0]
     return None
 
